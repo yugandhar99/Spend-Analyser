@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <link rel="stylesheet" href="./style.css">
+  <title>Spend Analyser</title>
+</head>
+
+<script type="module">
+  var user = "";
+  var pass = "";
+  var cid = "";
+  var cpass = "";
+  var tbody = document.getElementById('tbody1');
+  var tbody1 = document.getElementById('tbody2');
+  var iid=[];
+  var amount=[];
+  var date=[];
+  var loc=[];
+  var pay=[];
+  var reas=[];
+  var time=[];
+  var type=[];
+  var bal=[];
+  var oldbal=[];
+  var stdNo=0;
+  var oldbal1=0;
+
+
+  function addtab()
+  {
+    var len = iid.length;
+    for(var i=1; i<=len;i++)
+    {
+      var el = iid.indexOf("YA"+String(i));
+      var arr = (date.at(el)).split("-");
+      var type12 = type.at(el);
+      if(type12=="Credit")
+      {
+        let trow = document.createElement('tr');
+        let td1 = document.createElement('td');
+        let td2 = document.createElement('td');
+        let td3 = document.createElement('td');
+        let td4 = document.createElement('td');
+        let td5 = document.createElement('td');
+        let td6 = document.createElement('td');
+        td3.align = "left";
+        td1.innerHTML = ++stdNo;
+        td2.innerHTML = date.at(el)+"/"+time.at(el);
+        td3.innerHTML = reas.at(el);
+        td4.innerHTML = "Rs. "+amount.at(el)+"/-";
+        td5.innerHTML = "";
+        td6.innerHTML = "Rs. "+bal.at(el)+"/-";
+        trow.appendChild(td1);
+        trow.appendChild(td2);
+        trow.appendChild(td3);
+        trow.appendChild(td4);	
+        trow.appendChild(td5);	
+        trow.appendChild(td6);
+        tbody.appendChild(trow);
+      }
+      else{
+        let trow = document.createElement('tr');
+        let td1 = document.createElement('td');
+        let td2 = document.createElement('td');
+        let td3 = document.createElement('td');
+        let td4 = document.createElement('td');
+        let td5 = document.createElement('td');
+        let td6 = document.createElement('td');
+        td3.align = "left";
+        td1.innerHTML = ++stdNo;
+        td2.innerHTML = date.at(el)+"/"+time.at(el);
+        td3.innerHTML = reas.at(el);
+        td4.innerHTML = "";
+        td5.innerHTML = "Rs. "+amount.at(el)+"/-";
+        td6.innerHTML = "Rs. "+bal.at(el)+"/-";
+        trow.appendChild(td1);
+        trow.appendChild(td2);
+        trow.appendChild(td3);
+        trow.appendChild(td4);	
+        trow.appendChild(td5);	
+        trow.appendChild(td6);
+        tbody.appendChild(trow);
+      }
+  }
+}
+
+  function addtar1(ids1)
+  {
+    tbody1.innerHTML="";
+    document.getElementById("i1").innerHTML=ids1.at(3).replaceAll('"',"");
+    document.getElementById("i2").innerHTML=ids1.at(2).replaceAll('"',"");
+    document.getElementById("i3").innerHTML=ids1.at(7).replaceAll('"',"");
+    document.getElementById("i4").innerHTML=ids1.at(8).replaceAll('"',"");
+    document.getElementById("i5").innerHTML="Rs. "+ids1.at(0).replaceAll('"',"")+"/-";
+    document.getElementById("i6").innerHTML=ids1.at(5).replaceAll('"',"");
+    document.getElementById("i7").innerHTML=ids1.at(6).replaceAll('"',"");
+    document.getElementById("map").style.display = "block";
+    var cor = ids1.at(4).split(",");
+    var myCenter = new google.maps.LatLng(cor[0].replaceAll('"',""), cor[1].replaceAll('"',""));
+    var mapProp = 
+    {
+      center:myCenter,
+      zoom:12,
+      mapTypeId: 'satellite'
+    };
+    var map = new google.maps.Map(document.getElementById("map"),mapProp);
+    var marker = new google.maps.Marker
+    ({
+      position:myCenter,
+    });
+    marker.setMap(map);
+  }
+
+  function addtar(ids)
+  {
+    stdNo=0;
+    tbody.innerHTML="";
+    iid=[];
+    amount=[];
+    date=[];
+    loc=[];
+    pay=[];
+    reas=[];
+    time=[];
+    type=[];
+    bal=[];
+    ids.forEach(element =>
+    {
+      iid.push(element.Id.replaceAll('"',""));
+      amount.push(element.Amount.replaceAll('"',""));
+      date.push(element.Date.replaceAll('"',""));
+      loc.push(element.Location.replaceAll('"',""));
+      pay.push(element.Payment);
+      reas.push(element.Reason.replaceAll('"',""));
+      time.push(element.Time.replaceAll('"',""));
+      type.push(element.Type.replaceAll('"',""));
+      bal.push(element.Balance);
+    });
+    addtab()
+  }
+
+  function addtarb(ids)
+  {
+
+    iid=[];
+    oldbal=[];
+    ids.forEach(element =>
+    {
+      iid.push(element.Id.replaceAll('"',""));
+      oldbal.push(element.Balance);
+    });
+    var ele = iid.indexOf("YA"+String(oldbal.length));
+    var newid = "YA"+String(iid.length+1);
+    oldbal1 = oldbal[ele];
+    document.getElementById("ai1").innerHTML = newid;
+  }
+
+  function check(id)
+  {
+    user = "";
+    pass = "";
+    id.forEach(element =>
+    {
+      if(user=="")
+      {
+        user = element;
+      }
+      else
+      {
+        pass = element;
+      }
+    });
+    cid = document.getElementById("usid").value;
+    cpass = document.getElementById("uspass").value;
+    if(cid==user)
+    {
+      if(cpass==pass)
+      {
+        document.getElementById("usid").value = "";
+        document.getElementById("uspass").value = "";
+        document.getElementById("login").style.display = "none";
+        document.getElementById("box1").style.display = "block";
+        
+      }
+      else
+      {
+        document.getElementById("uspass").value = "";
+        alert("Please Enter Correct Password !...")
+      }
+    }
+    else
+    {
+      document.getElementById("usid").value = "";
+      document.getElementById("uspass").value = "";
+      alert("Please Enter Correct User Id !...");
+    }
+  }
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+  import {getDatabase, ref, set, child, update, remove, onValue, get} from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+  const firebaseConfig = 
+  {
+    apiKey: "AIzaSyC_ciKogqW67p-5de77tnhBhuY6zBc3Sa0",
+    authDomain: "spend-analysis-c6b4d.firebaseapp.com",
+    databaseURL: "https://spend-analysis-c6b4d-default-rtdb.firebaseio.com",
+    projectId: "spend-analysis-c6b4d",
+    storageBucket: "spend-analysis-c6b4d.appspot.com",
+    messagingSenderId: "897334626382",
+    appId: "1:897334626382:web:fb557b52559488fec05b1f",
+    measurementId: "G-704BWB3Y4Y"
+  };
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getDatabase();
+
+  function Dat()
+  {
+		const dbRef = ref(db);
+		get(child(dbRef, "Data"))
+		.then((snapshot)=>
+		{
+			var id =[];
+			snapshot.forEach(childSnapshot => 
+			{
+				id.push(childSnapshot.val());
+			});
+			check(id);
+		});
+  }
+
+  function tar()
+  {
+    document.getElementById("box1").style.display = "none";
+    document.getElementById("tran").style.display = "block";
+		const dbRef = ref(db);
+		get(child(dbRef, "Spend"))
+		.then((snapshot)=>
+		{
+			var ids =[];
+			snapshot.forEach(childSnapshot => 
+			{
+				ids.push(childSnapshot.val());
+			});
+			addtar(ids);
+		});
+  }
+
+  function vie()
+  {
+    document.getElementById("box1").style.display = "none";
+    document.getElementById("view").style.display = "block";
+  }
+
+  function vie1()
+  {
+    var idd = document.getElementById("idname").value;
+    if(idd!="")
+    {
+      const dbRef = ref(db);
+      get(child(dbRef, "Spend/"+String(idd)))
+      .then((snapshot)=>
+      {
+        var ids1 =[];
+        snapshot.forEach(childSnapshot => 
+        {
+          ids1.push(childSnapshot.val());
+        });
+        if(ids1.length>0)
+        {
+          addtar1(ids1);
+        }
+        else
+        {
+          alert("Please Enter Correct Transaction Id !...")
+        }
+      });
+    }
+    else
+    {
+      alert("Please Enter Correct Transaction Id !...")
+    }
+  }
+
+  function vie01(idd)
+  {
+    document.getElementById("tran").style.display = "none";
+    document.getElementById("view").style.display = "block";
+    if(idd!="")
+    {
+      const dbRef = ref(db);
+      get(child(dbRef, "Spend/"+String(idd)))
+      .then((snapshot)=>
+      {
+        var ids1 =[];
+        snapshot.forEach(childSnapshot => 
+        {
+          ids1.push(childSnapshot.val());
+        });
+        if(ids1.length>0)
+        {
+          addtar1(ids1);
+        }
+        else
+        {
+          alert("Please Enter Correct Transaction Id !...")
+        }
+      });
+    }
+    else
+    {
+      alert("Please Enter Correct Transaction Id !...")
+    }
+  }
+
+  function addm1()
+  {
+    document.getElementById("box1").style.display = "none";
+    document.getElementById("addmod").style.display = "block";
+    const dbRef = ref(db);
+    get(child(dbRef, "Spend"))
+		.then((snapshot)=>
+		{
+			var ids =[];
+			snapshot.forEach(childSnapshot => 
+			{
+				ids.push(childSnapshot.val());
+			});
+			addtarb(ids);
+		});
+  }
+
+  function ai1()
+  {
+    var type1 =  document.getElementById("ai2").value;
+    document.getElementById("ai6").value="";
+    if(type1 == "Debit")
+    {
+      var str='';
+      var values = new Array("Entertainment", "Fees", "Rent", "Food", "Snacks", "Essentials", "Miscellaneous", "Travel");
+      for (var i=0; i < values.length; ++i)
+      {
+        str += '<option value="'+values[i]+'" />';
+      }
+      var my_list=document.getElementById("cod");
+      my_list.innerHTML = str;
+    }
+    else if(type1 == "Credit")
+    {
+      var str='';
+      var values = new Array("Savings", "Withdraw", "Expenses", "Transfer");
+      for (var i=0; i < values.length; ++i)
+      {
+        str += '<option value="'+values[i]+'" />';
+      }
+      var my_list=document.getElementById("cod");
+      my_list.innerHTML = str;
+    }
+    else
+    {
+      alert("Please Select Correct Transcition Type !...");
+    }
+  }
+
+  var lotime = "";
+  function ai4()
+  {
+    var t = document.getElementById('ai4').value;
+    var [h,m] = t.split(":");
+    if( h==12 )
+    {
+     lotime = t+" PM";
+    }
+    else if(h>12)
+    {
+      if(String(h-12)>9)
+      {
+      lotime = String(h-12)+":"+m+" PM";
+      }
+      else
+      {
+        lotime = "0"+String(h-12)+":"+m+" PM";
+      }
+    }
+    else
+    {
+      lotime = t+" AM";
+    }
+  }
+  
+  function adddata()
+  {
+    var ai1 = document.getElementById("ai1").innerHTML;
+    var ai2 = document.getElementById("ai2").value;
+    var ai30 = document.getElementById("ai3").value;
+    var i30 = ai30.split("-");
+    var ai3 = i30[2]+"-"+i30[1]+"-"+i30[0];
+    var ai4 = lotime;
+    var ai5 = document.getElementById("ai5").value;
+    var ai6 = document.getElementById("ai6").value;
+    var ai7 = document.getElementById("ai7").value;
+    var ai8 = document.getElementById("ai8").value;
+    if(ai3 != "")
+    {
+      if(ai4 != "")
+      {
+        if(ai5 != "" & ai5 != 0)
+        {
+          if(ai6 != "")
+          {
+            if(ai7 != "")
+            {
+              if(ai8 != "")
+              {
+                if(ai2 == "Credit")
+                {
+                  set(ref(db, "Spend/"+ai1),
+                  {
+                    Id: ai1,
+                    Type: ai2,
+                    Date: ai3,
+                    Time: ai4,
+                    Amount: ai5,
+                    Payment: ai6,
+                    Reason: ai7, 
+                    Location: ai8,
+                    Balance: oldbal1+parseInt(ai5)
+                  })
+                  .then(()=>{
+                    alert("Successful");
+                    document.getElementById("ai2").value="";
+                    document.getElementById("ai3").value="";
+                    document.getElementById("ai4").value="";
+                    document.getElementById("ai5").value="";
+                    document.getElementById("ai6").value="";
+                    document.getElementById("ai7").value="";
+                    document.getElementById("ai8").value="";
+                    lotime = "";
+                    addm1()
+                  })
+                  .catch((error)=>{
+                    alert("error");
+                  });
+                }
+                else if(ai2 == "Debit")
+                {
+                  set(ref(db, "Spend/"+ai1),
+                  {
+                    Id: ai1,
+                    Type: ai2,
+                    Date: ai3,
+                    Time: ai4,
+                    Amount: ai5,
+                    Payment: ai6,
+                    Reason: ai7, 
+                    Location: ai8,
+                    Balance: oldbal1-parseInt(ai5)
+                  })
+                  .then(()=>{
+                    alert("Successful");
+                    document.getElementById("ai2").value="";
+                    document.getElementById("ai3").value="";
+                    document.getElementById("ai4").value="";
+                    document.getElementById("ai5").value="";
+                    document.getElementById("ai6").value="";
+                    document.getElementById("ai7").value="";
+                    document.getElementById("ai8").value="";
+                    lotime = "";
+                    addm1()
+                  })
+                  .catch((error)=>{
+                    alert("error");
+                  });
+                }
+                else
+                {
+                  alert("Please Select Correct Transcition Type !...");
+                }
+              }
+              else
+              {
+                alert("Please Enter Correct Transcition Location !...");
+              }
+            }
+            else
+            {
+              alert("Please Enter Correct Transcition Reason !...");
+            }
+          }
+          else
+          {
+            alert("Please Select Correct Transcition Section !...");
+          }
+        }
+        else
+        {
+          alert("Please Enter Correct Transcition Amount !...");
+        }
+      }
+      else
+      {
+        alert("Please Select Correct Transcition Time !...");
+      }
+    }
+    else
+    {
+      alert("Please Select Correct Transcition Date !...");
+    }
+  }
+
+  function bac1()
+  {
+    document.getElementById("tran").style.display = "none";
+    document.getElementById("box1").style.display = "block";
+  }
+
+  function bac2()
+  {
+    document.getElementById("idname").value="";
+    document.getElementById("i1").innerHTML="";
+    document.getElementById("i2").innerHTML="";
+    document.getElementById("i3").innerHTML="";
+    document.getElementById("i4").innerHTML="";
+    document.getElementById("i5").innerHTML="";
+    document.getElementById("i6").innerHTML="";
+    document.getElementById("i7").innerHTML="";
+    document.getElementById("map").style.display = "none";
+    document.getElementById("view").style.display = "none";
+    document.getElementById("box1").style.display = "block";
+  }
+
+  function bac3()
+  {
+    document.getElementById("ai1").innerHTML="";
+    document.getElementById("ai2").value="";
+    document.getElementById("ai3").value="";
+    document.getElementById("ai4").value="";
+    document.getElementById("ai5").value="";
+    document.getElementById("ai6").value="";
+    document.getElementById("ai7").value="";
+    document.getElementById("ai8").value="";
+    lotime = "";
+    document.getElementById("addmod").style.display = "none";
+    document.getElementById("box1").style.display = "block";
+  }
+
+  document.getElementById("button").onclick = function() {Dat()};
+  document.getElementById("trans").onclick = function() {tar()};
+  document.getElementById("views").onclick = function() {vie()};
+  document.getElementById("vbuse").onclick = function() {vie1()};
+  document.getElementById("addmods").onclick = function() {addm1()};
+  document.getElementById("ai2").onchange = function() {ai1()};
+  document.getElementById("ai4").onchange = function() {ai4()};
+  document.getElementById("addbutton").onclick = function() {adddata()};
+  document.getElementById("back1").onclick = function() {bac1()};
+  document.getElementById("back2").onclick = function() {bac2()};
+  document.getElementById("back3").onclick = function() {bac3()};
+</script>
+
+<body>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg" defer></script>
+  <div class="box" id="login">
+    <div class="form">
+      <h1><u>Spend Analyser</u></h1>
+      <div class="inputBox">
+        <input type="text" required="required" id="usid">
+        <span>Username</span>
+        <i></i>
+      </div>
+      <div class="inputBox">
+        <input type="password" required="required" id="uspass">
+        <span>Password</span>
+        <i></i>
+      </div>
+      <input type="submit" value="Login" id="button">
+    </div>
+  </div>
+
+  <div id="box1" style="display: none;">
+    <div class="row">
+      <div class="column">
+        <div class="head" style="background-color:rgba(240, 248, 255, 0)">
+          <h1><u>Spend Analyser</u></h1>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card" id = "trans">
+          <h3>Transcations</h3>
+        </div>
+      </div>
+    
+      <div class="column">
+        <div class="card" id="views">
+          <h3>Details</h3>
+        </div>
+      </div>
+      
+      <div class="column">
+        <div class="card" id="addmods">
+          <h3>Add Transaction</h3>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <h3>Analysis</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tran" align="center" style="display: none;">
+    <h1 style="color: #9b1fe8; font-weight: 800; letter-spacing: 0.1em;" id="back1"><u>Transcitions</u></h1>
+    <table id="table1" class="table"  border="4px" align="center" style="text-align: center; width: 1200px;">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Date & Time</th>
+          <th>Reason</th>
+          <th>Credit</th>
+          <th>Debit</th>
+          <th>Balance</th>
+        </tr>
+      </thead>
+      <tbody id="tbody1">
+      </tbody>
+    </table><br>
+  </div>
+
+  <div id="view" align="center" style="display: none;">
+    <h1 style="color: #9b1fe8; font-weight: 800; letter-spacing: 0.1em;" id="back2"><u>Search Details</u></h1><br>
+    <input type="text" id="idname" name="fname" value="" style="text-align: center;">&nbsp;&nbsp;
+    <button type="submit" id="vbuse">Search</button><br><br>
+    <table class="table"  border="4px" align="center" style="text-align: center; width: 400px;">
+      <tbody id="tbody2">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th id="i1"></th>
+          </tr>
+          <tr>
+            <th>Credit/Debit</th>
+            <th id="i4"></th>
+          </tr>
+          <tr>
+          <tr>
+            <th>Date</th>
+            <th id="i2"></th>
+          </tr>
+          <tr>
+            <th>Time</th>
+            <th id="i3"></th>
+          </tr>
+            <th>Amount</th>
+            <th id="i5"></th>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <th id="i6"></th>
+          </tr>
+          <tr>
+            <th>Reason</th>
+            <th id="i7"></th>
+          </tr>
+        </thead>
+      </tbody>
+    </table><br>
+    <div id="map"></div>
+  </div>
+
+  <div id="addmod" align="center" style="display: none;">
+    <h1 style="color: #9b1fe8; font-weight: 800; letter-spacing: 0.1em;" id="back3"><u>Add Transcition</u></h1><br>
+    <table class="table"  border="4px" align="center" style="text-align: center; width: 400px;">
+      <tbody id="tbody3">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th id="ai1"></th>
+          </tr>
+          <tr>
+            <th>Credit/Debit</th>
+            <th><input list="typed" required="required" value="" style="width: 100%; background-color: transparent;" id="ai2"></th>
+            <datalist id="typed">
+              <option value="Credit" />
+              <option value="Debit" />
+          </datalist>
+          </tr>
+          <tr>
+          <tr>
+            <th>Date</th>
+            <th><input type="date" required="required" value="" style="width: 100%; background-color: transparent;" id="ai3"></th>
+          </tr>
+          <tr>
+            <th>Time</th>
+            <th><input type="time" required="required" value="" style="width: 100%; background-color: transparent;" id="ai4"></th>
+          </tr>
+            <th>Amount</th>
+            <th><input type="number" required="required" value="" style="width: 100%; background-color: transparent;" id="ai5"></th>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <th><input list="cod" required="required" value="" style="width: 100%; background-color: transparent;" id="ai6"></th>
+            <datalist id="cod">
+            </datalist>
+          </tr>
+          <tr>
+            <th>Reason</th>
+            <th><input type="text" required="required" value="" style="width: 100%; background-color: transparent;" id="ai7"></th>
+          </tr>
+          <tr>
+            <th>Location</th>
+            <th><input type="text" required="required" value="" style="width: 100%; background-color: transparent;" id="ai8"></th>
+          </tr>
+        </thead>
+      </tbody>
+    </table><br>
+    <div>
+      <input type="submit" value="Submit" id="addbutton">
+    </div>
+  </div>
+</body>
+</html>
